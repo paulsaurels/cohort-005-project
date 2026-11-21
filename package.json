@@ -15,6 +15,7 @@
     "typecheck": "react-router typegen && node node_modules/typescript-7/bin/tsc --incremental --tsBuildInfoFile node_modules/.cache/tsbuildinfo",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:dev-ui-browser": "bash scripts/test-dev-ui-browser.sh",
     "test:mutation": "tsx scripts/mutate-diff.ts",
     "db:generate": "drizzle-kit generate",
     "db:seed": "tsx scripts/seed.ts",

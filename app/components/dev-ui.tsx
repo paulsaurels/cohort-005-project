@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Popover } from "radix-ui";
 import { Form, useLocation } from "react-router";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
@@ -76,7 +77,11 @@ export function DevUI({
           <Button
             size="icon-xs"
             variant="ghost"
-            onClick={() => setMinimized(true)}
+            aria-label="Minimize DevUI"
+            onClick={() => {
+              setOpen(false);
+              setMinimized(true);
+            }}
           >
             <ChevronDown className="size-3" />
           </Button>
@@ -96,28 +101,36 @@ export function DevUI({
           </div>
         )}
 
-        <div className="relative">
-          <Button
-            size="sm"
-            variant="outline"
-            className="w-full justify-between"
-            onClick={() => setOpen(!open)}
-          >
-            Switch user
-            <ChevronDown
-              className={cn(
-                "size-3 transition-transform",
-                open && "rotate-180"
-              )}
-            />
-          </Button>
+        <Popover.Root open={open} onOpenChange={setOpen}>
+          <Popover.Trigger asChild>
+            <Button
+              size="sm"
+              variant="outline"
+              className="w-full justify-between"
+            >
+              Switch user
+              <ChevronDown
+                className={cn(
+                  "size-3 transition-transform",
+                  open && "rotate-180"
+                )}
+              />
+            </Button>
+          </Popover.Trigger>
 
-          {open && (
-            <div className="absolute bottom-full mb-1 max-h-64 w-full overflow-y-auto rounded-md border bg-popover shadow-md">
+          <Popover.Portal>
+            <Popover.Content
+              aria-label="Switch user"
+              side="top"
+              align="end"
+              sideOffset={4}
+              className="z-50 max-h-64 w-[var(--radix-popover-trigger-width)] overflow-y-auto rounded-md border bg-popover shadow-md"
+            >
               {users.map((user) => (
                 <Form
                   key={user.id}
                   method="post"
+                  onSubmit={() => setOpen(false)}
                   action={`/api/switch-user?redirectTo=${encodeURIComponent(location.pathname + location.search)}`}
                 >
                   <input type="hidden" name="userId" value={user.id} />
@@ -133,9 +146,9 @@ export function DevUI({
                   </button>
                 </Form>
               ))}
-            </div>
-          )}
-        </div>
+            </Popover.Content>
+          </Popover.Portal>
+        </Popover.Root>
 
         {/* Country Override (PPP) */}
         <div className="mt-3 border-t border-dashed pt-3">
